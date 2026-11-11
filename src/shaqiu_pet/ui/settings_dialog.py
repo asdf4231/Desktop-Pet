@@ -19,10 +19,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from mochi_pet.settings import AppSettings
-from mochi_pet.ui.art import mochi_pixmap
-from mochi_pet.ui.controls import PaintedButton
-from mochi_pet.ui.palette import LINE, qcolor
+from shaqiu_pet.settings import AppSettings
+from shaqiu_pet.ui.art import shaqiu_pixmap
+from shaqiu_pet.ui.controls import PaintedButton
+from shaqiu_pet.ui.palette import LINE, qcolor
 
 PAGE_APPEARANCE = 0
 PAGE_BEHAVIOUR = 1
@@ -63,7 +63,7 @@ class SettingsDialog(QDialog):
     def __init__(self, settings: AppSettings, api_key: str, parent=None):
         super().__init__(parent)
         self.setObjectName("settingsDialog")
-        self.setWindowTitle("Mochi · 设置")
+        self.setWindowTitle("shaqiu · 设置")
         self.resize(830, 700)
         self.setMinimumSize(760, 640)
         self.setWindowModality(Qt.WindowModality.WindowModal)
@@ -95,7 +95,7 @@ class SettingsDialog(QDialog):
         )
         self._refresh_preview()
 
-        brand = QLabel("MOCHI · 桌宠伙伴")
+        brand = QLabel("shaqiu · 桌宠伙伴")
         brand.setObjectName("railBrand")
         copy = QLabel("角色形象固定使用当前图片，只调整大小和相处方式。")
         copy.setObjectName("railCopy")
@@ -132,7 +132,7 @@ class SettingsDialog(QDialog):
             size = min(92, max(52, int(self.scale_slider.value() * 0.62)))
         else:
             size = 92
-        self.preview.setPixmap(mochi_pixmap(size, "idle"))
+        self.preview.setPixmap(shaqiu_pixmap(size, "idle"))
 
     def _show_page(self, index: int) -> None:
         self.stack.setCurrentIndex(index)
@@ -226,7 +226,7 @@ class SettingsDialog(QDialog):
         fixed_preview = QLabel()
         fixed_preview.setFixedSize(104, 128)
         fixed_preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        fixed_preview.setPixmap(mochi_pixmap(94, "idle"))
+        fixed_preview.setPixmap(shaqiu_pixmap(94, "idle"))
         fixed_copy = QVBoxLayout()
         fixed_title = QLabel("固定角色形象")
         fixed_title.setObjectName("sectionTitle")
@@ -343,7 +343,7 @@ class SettingsDialog(QDialog):
         layout.setContentsMargins(0, 0, 4, 0)
         layout.setSpacing(0)
         layout.addWidget(
-            self._make_page_header("模型与人设", "告诉 Mochi 去哪里说话，以及它该怎么陪你。")
+            self._make_page_header("模型与人设", "告诉 shaqiu 去哪里说话，以及它该怎么陪你。")
         )
         layout.addSpacing(18)
 

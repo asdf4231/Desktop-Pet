@@ -4,9 +4,9 @@ import time
 from PySide6.QtCore import QPoint, Qt
 from PySide6.QtTest import QTest
 
-from mochi_pet.settings import TrainingHistoryStore
-from mochi_pet.training import SchulteSession
-from mochi_pet.ui.training import ReactionWindow, SchulteWindow, VisionWindow
+from shaqiu_pet.settings import TrainingHistoryStore
+from shaqiu_pet.training import SchulteSession
+from shaqiu_pet.ui.training import ReactionWindow, SchulteWindow, VisionWindow
 
 
 def test_schulte_replaces_first_round_numbers_in_place_and_finishes_at_50():

@@ -18,9 +18,9 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QMenu, QWidget
 
-from mochi_pet.settings import AppSettings, PetState
-from mochi_pet.ui.art import bubble_path, paint_mochi
-from mochi_pet.ui.palette import (
+from shaqiu_pet.settings import AppSettings, PetState
+from shaqiu_pet.ui.art import bubble_path, paint_shaqiu
+from shaqiu_pet.ui.palette import (
     CARD,
     CORAL_DEEP,
     GOLD,
@@ -76,6 +76,7 @@ class PetWidget(QWidget):
     open_reaction = Signal()
     open_vision = Signal()
     open_settings = Signal()
+    quit_requested = Signal()
     position_changed = Signal(int, int)
 
     ACTIONS = {
@@ -290,7 +291,7 @@ class PetWidget(QWidget):
         self._proactive()
 
     def _proactive(self) -> None:
-        """Mochi starts the conversation on its own."""
+        """shaqiu starts the conversation on its own."""
         if self._settings.chattiness == "quiet":
             self._next_speak_at = float("inf")
             return
@@ -298,7 +299,7 @@ class PetWidget(QWidget):
         beat = self._speak_index % 3
         if not self._greeted:
             self._greeted = True
-            self.play_action("wave", "我是 Mochi。今天也一起待着吧。")
+            self.play_action("wave", "我是 shaqiu。今天也一起待着吧。")
             # Greet first, then follow up with the play invitation shortly after.
             self._speak_index = 0
             self._next_speak_at = time.monotonic() + 16.0
@@ -605,10 +606,14 @@ class PetWidget(QWidget):
             self.open_vision.emit()
 
     # ------------------------------------------------------------------
-    # menus (kept as a secondary route; Mochi asks first)
+    # menus (kept as a secondary route; shaqiu asks first)
     # ------------------------------------------------------------------
     def _show_context_menu(self, position: QPoint) -> None:
         self._wake()
+        menu = self._create_context_menu()
+        menu.exec(position)
+
+    def _create_context_menu(self) -> QMenu:
         menu = QMenu(self)
         chat_action = QAction("陪我聊聊", menu)
         chat_action.triggered.connect(self.open_chat.emit)
@@ -626,7 +631,10 @@ class PetWidget(QWidget):
         menu.addSeparator()
         settings_action = menu.addAction("设置")
         settings_action.triggered.connect(self.open_settings.emit)
-        menu.exec(position)
+        menu.addSeparator()
+        quit_action = menu.addAction("退出 shaqiu（下次见）")
+        quit_action.triggered.connect(self.quit_requested.emit)
+        return menu
 
     def _show_action_menu(self, position: QPoint) -> None:
         menu = QMenu(self)
@@ -634,7 +642,7 @@ class PetWidget(QWidget):
         menu.exec(position)
 
     def _add_action_menu(self, parent: QMenu) -> None:
-        action_menu = parent.addMenu("让 Mochi 做点什么")
+        action_menu = parent.addMenu("让 shaqiu 做点什么")
         for action, label in (
             ("wave", "挥挥手"),
             ("happy", "开心一下"),
@@ -672,7 +680,7 @@ class PetWidget(QWidget):
         pointer = self._to_design(self.mapFromGlobal(QCursor.pos()).toPointF())
         painter.save()
         painter.translate(0.0, bob)
-        paint_mochi(
+        paint_shaqiu(
             painter,
             character,
             mood=self._current_mood(),
@@ -680,6 +688,7 @@ class PetWidget(QWidget):
             gesture=action_elapsed,
             gaze=max(-2.6, min(2.6, (pointer.x() - PET_WIDTH / 2.0) / 30.0)),
             blink=self._should_blink(elapsed, now),
+            walking=self._walking,
         )
         painter.restore()
 

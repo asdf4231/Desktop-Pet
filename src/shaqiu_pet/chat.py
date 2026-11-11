@@ -4,7 +4,7 @@ from typing import Literal
 import httpx
 from pydantic import BaseModel
 
-from mochi_pet.settings import AppSettings
+from shaqiu_pet.settings import AppSettings
 
 LOGGER = logging.getLogger(__name__)
 

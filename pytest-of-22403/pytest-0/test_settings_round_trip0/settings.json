@@ -1,0 +1,16 @@
+{
+  "endpoint": "https://api.example.com/v1/chat/completions",
+  "model": "demo-model",
+  "system_prompt": "Be concise",
+  "request_timeout": 30,
+  "pet_scale": 100,
+  "pet_opacity": 100,
+  "always_on_top": true,
+  "wander": true,
+  "smart_move": true,
+  "doze": true,
+  "remember_position": true,
+  "click_through": false,
+  "autostart": false,
+  "chattiness": "normal"
+}

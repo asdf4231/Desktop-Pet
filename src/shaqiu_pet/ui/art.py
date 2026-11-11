@@ -1,4 +1,4 @@
-"""Fixed raster artwork and lightweight motion for the desktop companion."""
+"""Articulated animation built from the supplied character artwork."""
 
 import math
 from pathlib import Path
@@ -14,10 +14,21 @@ from PySide6.QtGui import (
     QRadialGradient,
 )
 
-from mochi_pet.ui.palette import qcolor
+from shaqiu_pet.ui.palette import qcolor
 
-ASSET_PATH = Path(__file__).resolve().parents[1] / "assets" / "character.png"
+ASSET_DIR = Path(__file__).resolve().parents[1] / "assets"
+ASSET_PATH = ASSET_DIR / "character.png"
 _ASSET_CACHE: QPixmap | None = None
+_PART_CACHE: dict[str, QPixmap] = {}
+ARTICULATED_PARTS = (
+    "character_head",
+    "character_torso",
+    "character_arm_left",
+    "character_arm_right",
+    "character_leg_left",
+    "character_leg_right",
+    "character_tail",
+)
 
 
 def _asset_pixmap() -> QPixmap:
@@ -26,6 +37,15 @@ def _asset_pixmap() -> QPixmap:
     if _ASSET_CACHE is None:
         _ASSET_CACHE = QPixmap(str(ASSET_PATH))
     return _ASSET_CACHE
+
+
+def _part_pixmap(name: str) -> QPixmap:
+    """Load one transparent body-part layer from the fixed source artwork."""
+    pixmap = _PART_CACHE.get(name)
+    if pixmap is None:
+        pixmap = QPixmap(str(ASSET_DIR / f"{name}.png"))
+        _PART_CACHE[name] = pixmap
+    return pixmap
 
 
 def paint_star(
@@ -120,7 +140,7 @@ def bubble_path(rect: QRectF, radius: float, tail: str | None = None, tail_size:
     return path.united(triangle)
 
 
-def paint_mochi(
+def paint_shaqiu(
     painter: QPainter,
     target: QRectF,
     *,
@@ -129,9 +149,10 @@ def paint_mochi(
     gesture: float = 0.0,
     gaze: float = 0.0,
     blink: bool = False,
+    walking: bool = False,
     theme: str | None = None,
 ) -> None:
-    """Draw the supplied character with breathing, swaying and reaction motion.
+    """Draw articulated head, arm, leg and tail motion from the supplied image.
 
     ``theme`` is accepted only as a compatibility placeholder. Appearance
     colours and the character image itself are intentionally not configurable.
@@ -149,35 +170,79 @@ def paint_mochi(
         draw_width,
         draw_height,
     )
+    scale_x = body.width() / pixmap.width()
+    scale_y = body.height() / pixmap.height()
 
     shadow = QRadialGradient(QPointF(body.center().x(), target.bottom() - 2), draw_width * 0.42)
     shadow.setColorAt(0.0, qcolor("#35291F", 72))
     shadow.setColorAt(1.0, qcolor("#35291F", 0))
 
     breathe = math.sin(time * 2.05)
-    sway = math.sin(time * 1.15) * 1.15
-    bob = 1.0 + breathe * 0.8
-    scale_x = 1.0 + breathe * 0.006
-    scale_y = 1.0 - breathe * 0.005
+    head_angle = math.sin(time * 0.85) * 0.75
+    head_offset_y = breathe * max(0.45, draw_height * 0.0018)
+    torso_scale = (1.0 + breathe * 0.006, 1.0 - breathe * 0.004)
+    left_arm = 1.7 + math.sin(time * 1.25) * 1.0
+    right_arm = -1.7 - math.sin(time * 1.25) * 1.0
+    left_leg = math.sin(time * 1.6) * 0.45
+    right_leg = -left_leg
+    tail_angle = math.sin(time * 2.1) * 3.2
+    body_bob = breathe * 0.55
 
-    if mood == "happy":
-        bob -= abs(math.sin(gesture * 7.5)) * max(4.0, target.height() * 0.018)
+    if walking:
+        stride = math.sin(time * 8.5)
+        left_leg = stride * 13.0
+        right_leg = -stride * 13.0
+        left_arm = -stride * 10.0
+        right_arm = stride * 10.0
+        body_bob -= abs(stride) * max(1.0, draw_height * 0.004)
+        head_angle += stride * 0.7
+        tail_angle += stride * 3.0
+    elif mood == "happy":
+        hop = abs(math.sin(gesture * 7.5))
+        body_bob -= hop * max(2.0, draw_height * 0.009)
+        left_arm += 15.0 + hop * 7.0
+        right_arm -= 15.0 + hop * 7.0
+        head_angle += math.sin(gesture * 7.5) * 1.1
+        torso_scale = (1.0 + hop * 0.008, 1.0 - hop * 0.006)
     elif mood == "wave":
-        sway = 2.2 + math.sin(gesture * 7.0) * 2.4
+        right_arm = -62.0 + math.sin(gesture * 9.0) * 12.0
+        left_arm = 4.0
+        head_angle = 3.0 + math.sin(gesture * 4.0) * 0.8
     elif mood == "dance":
-        sway = math.sin(gesture * 8.5) * 5.5
-        bob -= abs(math.sin(gesture * 6.0)) * 5.0
+        rhythm = math.sin(gesture * 8.5)
+        left_arm = 19.0 + rhythm * 24.0
+        right_arm = -19.0 - rhythm * 24.0
+        left_leg = rhythm * 8.0
+        right_leg = -rhythm * 8.0
+        head_angle = rhythm * 3.2
+        tail_angle += rhythm * 5.0
+        body_bob -= abs(rhythm) * max(1.2, draw_height * 0.004)
     elif mood == "cheer":
-        bob -= abs(math.sin(gesture * 7.0)) * max(5.0, target.height() * 0.022)
-        scale_y += abs(math.sin(gesture * 7.0)) * 0.012
+        lift = abs(math.sin(gesture * 7.0))
+        left_arm = 47.0 + lift * 5.0
+        right_arm = -47.0 - lift * 5.0
+        body_bob -= lift * max(2.5, draw_height * 0.011)
+        head_angle = math.sin(gesture * 7.0) * 2.0
+        torso_scale = (1.0 - lift * 0.006, 1.0 + lift * 0.010)
     elif mood == "surprise":
-        sway = 0.0
-        bob -= max(3.0, target.height() * 0.014) * max(0.0, 1.0 - gesture * 2.2)
-        scale_x += 0.018 * max(0.0, 1.0 - gesture * 2.8)
-        scale_y -= 0.012 * max(0.0, 1.0 - gesture * 2.8)
+        shock = max(0.0, 1.0 - gesture * 2.2)
+        left_arm = 26.0 * shock
+        right_arm = -26.0 * shock
+        head_offset_y -= shock * max(2.0, draw_height * 0.010)
+        head_angle = 0.0
+        torso_scale = (1.0 + shock * 0.012, 1.0 - shock * 0.008)
+    elif mood == "shy":
+        left_arm = -9.0
+        right_arm = 9.0
+        head_angle = -3.2
+        head_offset_y += max(0.8, draw_height * 0.003)
     elif mood == "sleep":
-        sway = -4.0 + math.sin(time * 1.2) * 0.7
-        bob = 2.0 + math.sin(time * 1.4)
+        head_angle = -4.2 + math.sin(time * 0.8) * 0.5
+        head_offset_y += max(1.0, draw_height * 0.004)
+        left_arm = 3.5
+        right_arm = -3.5
+        torso_scale = (1.0, 0.985)
+        tail_angle = math.sin(time * 1.1) * 1.2
 
     painter.save()
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
@@ -194,32 +259,98 @@ def paint_mochi(
         )
     )
 
-    pivot = QPointF(body.center().x(), body.bottom())
-    painter.translate(0.0, bob)
-    painter.translate(pivot)
-    painter.rotate(sway)
-    painter.scale(scale_x, scale_y)
-    painter.translate(-pivot)
-    painter.drawPixmap(body, pixmap, QRectF(pixmap.rect()))
+    def draw_part(
+        name: str,
+        *,
+        angle: float = 0.0,
+        pivot: tuple[float, float],
+        offset: tuple[float, float] = (0.0, 0.0),
+        part_scale: tuple[float, float] = (1.0, 1.0),
+    ) -> None:
+        part = _part_pixmap(name)
+        if part.isNull():
+            return
+        pivot_point = QPointF(
+            body.left() + pivot[0] * scale_x,
+            body.top() + pivot[1] * scale_y,
+        )
+        painter.save()
+        painter.translate(offset[0], offset[1])
+        painter.translate(pivot_point)
+        painter.rotate(angle)
+        painter.scale(part_scale[0], part_scale[1])
+        painter.translate(-pivot_point)
+        painter.drawPixmap(body, part, QRectF(part.rect()))
+        painter.restore()
+
+    # Legs and tail sit behind the torso; arms move over the coat.
+    draw_part(
+        "character_tail",
+        angle=tail_angle,
+        pivot=(620.0, 1110.0),
+        offset=(0.0, body_bob),
+    )
+    draw_part(
+        "character_leg_left",
+        angle=left_leg,
+        pivot=(285.0, 1135.0),
+        offset=(0.0, body_bob),
+    )
+    draw_part(
+        "character_leg_right",
+        angle=right_leg,
+        pivot=(475.0, 1135.0),
+        offset=(0.0, body_bob),
+    )
+    draw_part(
+        "character_torso",
+        pivot=(395.0, 1030.0),
+        offset=(0.0, body_bob),
+        part_scale=torso_scale,
+    )
+    draw_part(
+        "character_arm_left",
+        angle=left_arm,
+        pivot=(220.0, 710.0),
+        offset=(0.0, body_bob),
+    )
+    draw_part(
+        "character_arm_right",
+        angle=right_arm,
+        pivot=(570.0, 710.0),
+        offset=(0.0, body_bob),
+    )
+    draw_part(
+        "character_head",
+        angle=head_angle,
+        pivot=(395.0, 635.0),
+        offset=(0.0, body_bob + head_offset_y),
+    )
 
     if blink and mood not in ("sleep", "happy", "cheer", "dance"):
+        head_pivot = QPointF(
+            body.left() + 395.0 * scale_x,
+            body.top() + 635.0 * scale_y,
+        )
+        painter.save()
+        painter.translate(0.0, body_bob + head_offset_y)
+        painter.translate(head_pivot)
+        painter.rotate(head_angle)
+        painter.translate(-head_pivot)
+        painter.translate(body.topLeft())
+        painter.scale(scale_x, scale_y)
         painter.setPen(
             QPen(
                 qcolor("#4B2617"),
-                max(1.1, draw_width * 0.008),
+                8.0,
                 Qt.PenStyle.SolidLine,
                 Qt.PenCapStyle.RoundCap,
             )
         )
         painter.setBrush(Qt.BrushStyle.NoBrush)
-        for x_factor in (0.24, 0.67):
-            eye = QRectF(
-                body.left() + draw_width * x_factor,
-                body.top() + draw_height * 0.226,
-                draw_width * 0.13,
-                draw_height * 0.046,
-            )
+        for eye in (QRectF(150, 320, 105, 62), QRectF(535, 320, 105, 62)):
             painter.drawArc(eye, 20 * 16, 140 * 16)
+        painter.restore()
     painter.restore()
 
     if mood in ("happy", "cheer", "dance"):
@@ -250,7 +381,7 @@ def paint_mochi(
         painter.restore()
 
 
-def mochi_pixmap(
+def shaqiu_pixmap(
     size: int,
     mood: str = "idle",
     *,
@@ -265,7 +396,7 @@ def mochi_pixmap(
     painter = QPainter(pixmap)
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
     margin = pixmap.width() * 0.05
-    paint_mochi(
+    paint_shaqiu(
         painter,
         QRectF(
             margin,
@@ -283,7 +414,7 @@ def mochi_pixmap(
     return pixmap
 
 
-def mochi_icon(size: int = 64, theme: str | None = None) -> QPixmap:
+def shaqiu_icon(size: int = 64, theme: str | None = None) -> QPixmap:
     """A compact badge icon for the tray and application windows."""
     ratio = 2
     pixmap = QPixmap(int(size * ratio), int(size * ratio))
@@ -297,7 +428,7 @@ def mochi_icon(size: int = 64, theme: str | None = None) -> QPixmap:
     painter.setPen(QPen(qcolor("#E9CFB5"), max(1.0, pixmap.width() * 0.018)))
     painter.setBrush(badge)
     painter.drawEllipse(QRectF(1, 1, pixmap.width() - 2, pixmap.height() - 2))
-    paint_mochi(
+    paint_shaqiu(
         painter,
         QRectF(
             pixmap.width() * 0.12,
@@ -317,10 +448,11 @@ def mochi_icon(size: int = 64, theme: str | None = None) -> QPixmap:
 
 __all__ = [
     "ASSET_PATH",
+    "ARTICULATED_PARTS",
     "bubble_path",
-    "mochi_icon",
-    "mochi_pixmap",
-    "paint_mochi",
+    "shaqiu_icon",
+    "shaqiu_pixmap",
+    "paint_shaqiu",
     "paint_sparkle",
     "paint_star",
 ]

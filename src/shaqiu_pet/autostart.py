@@ -8,12 +8,12 @@ import logging
 import sys
 from pathlib import Path
 
-from mochi_pet.settings import PROJECT_ROOT
+from shaqiu_pet.settings import PROJECT_ROOT
 
 LOGGER = logging.getLogger(__name__)
 
 RUN_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
-VALUE_NAME = "MochiPet"
+VALUE_NAME = "shaqiu"
 
 
 def is_supported() -> bool:
@@ -29,7 +29,7 @@ def default_command() -> str:
         if windowless.exists():
             interpreter = windowless
         return f'"{interpreter}" "{script}"'
-    return f'"{sys.executable}" -m mochi_pet'
+    return f'"{sys.executable}" -m shaqiu_pet'
 
 
 def _open_run_key(write: bool):

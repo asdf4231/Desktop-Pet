@@ -3,7 +3,7 @@ from pydantic import ValidationError
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QLineEdit
 
-from mochi_pet.settings import (
+from shaqiu_pet.settings import (
     AppSettings,
     PetState,
     PetStateStore,
@@ -11,7 +11,7 @@ from mochi_pet.settings import (
     TrainingHistoryStore,
     TrainingRecord,
 )
-from mochi_pet.ui.settings_dialog import SettingsDialog
+from shaqiu_pet.ui.settings_dialog import SettingsDialog
 
 
 def test_settings_round_trip(tmp_path):
@@ -89,7 +89,7 @@ def test_settings_dialog_keeps_api_key_hidden_until_requested(qtbot):
 
 
 def test_settings_dialog_opens_on_the_connection_page_for_a_fresh_install(qtbot):
-    from mochi_pet.ui.settings_dialog import PAGE_APPEARANCE, PAGE_CONNECTION
+    from shaqiu_pet.ui.settings_dialog import PAGE_APPEARANCE, PAGE_CONNECTION
 
     fresh = SettingsDialog(AppSettings(), "")
     qtbot.addWidget(fresh)

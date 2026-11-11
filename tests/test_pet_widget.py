@@ -1,7 +1,10 @@
+from pathlib import Path
+
 from PySide6.QtCore import QPoint, Qt
 
-from mochi_pet.settings import AppSettings
-from mochi_pet.ui.pet_widget import (
+from shaqiu_pet.settings import AppSettings
+from shaqiu_pet.ui.art import ARTICULATED_PARTS
+from shaqiu_pet.ui.pet_widget import (
     PET_HEIGHT,
     PET_WIDTH,
     TOOLBAR_CENTERS,
@@ -26,6 +29,22 @@ def test_pet_widget_renders_transparent_window(qtbot):
     assert image.width() == PET_WIDTH
     assert image.height() == PET_HEIGHT
     assert image.pixelColor(100, 100).alpha() > 0
+
+
+def test_pet_has_separate_head_arm_leg_and_tail_layers(qtbot):
+    assets = Path(__file__).resolve().parents[1] / "src" / "shaqiu_pet" / "assets"
+    assert all((assets / f"{name}.png").is_file() for name in ARTICULATED_PARTS)
+
+    pet = PetWidget()
+    qtbot.addWidget(pet)
+    pet.show()
+    pet.play_action("wave")
+    qtbot.wait(120)
+    first = pet.grab().toImage()
+    qtbot.wait(180)
+    second = pet.grab().toImage()
+
+    assert first != second
 
 
 def test_pet_keeps_chat_training_and_playful_reactions(qtbot):
@@ -88,6 +107,21 @@ def test_pet_asks_before_opening_chat_and_accepts_a_no(qtbot):
     qtbot.mouseClick(pet, Qt.MouseButton.LeftButton, pos=accept)
 
     assert opened == ["chat"]
+
+
+def test_pet_context_menu_can_quit_the_application(qtbot):
+    pet = PetWidget()
+    qtbot.addWidget(pet)
+    quit_requests = []
+    pet.quit_requested.connect(lambda: quit_requests.append(True))
+
+    menu = pet._create_context_menu()
+    exit_action = next(
+        action for action in menu.actions() if action.text() == "退出 shaqiu（下次见）"
+    )
+    exit_action.trigger()
+
+    assert quit_requests == [True]
 
 
 def test_pet_does_not_interrupt_itself_while_a_question_is_open(qtbot):

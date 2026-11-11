@@ -1,0 +1,11 @@
+{
+  "records": [
+    {
+      "kind": "schulte",
+      "duration_ms": 1256,
+      "success": true,
+      "played_at": "2026-11-11T19:12:00+08:00",
+      "note": ""
+    }
+  ]
+}

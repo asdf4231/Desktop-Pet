@@ -1,0 +1,18 @@
+{
+  "records": [
+    {
+      "kind": "vision",
+      "duration_ms": 400,
+      "success": true,
+      "played_at": "2026-11-11T19:12:00+08:00",
+      "note": "target=012345; entered=012345"
+    },
+    {
+      "kind": "vision",
+      "duration_ms": 400,
+      "success": false,
+      "played_at": "2026-11-11T19:12:00+08:00",
+      "note": "target=654321; entered=111111"
+    }
+  ]
+}

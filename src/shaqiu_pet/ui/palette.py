@@ -1,4 +1,4 @@
-"""Shared colour tokens and painting helpers for the Mochi interface.
+"""Shared colour tokens and painting helpers for the shaqiu interface.
 
 Every surface (the pet, chat, settings, the training windows) pulls from this module so
 the whole app keeps one warm, soft, hand-drawn palette instead of drifting into a

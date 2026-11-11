@@ -16,11 +16,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from mochi_pet.chat import ChatClient, ChatMessage
-from mochi_pet.settings import AppSettings, read_style_examples
-from mochi_pet.ui.art import bubble_path, mochi_pixmap
-from mochi_pet.ui.controls import PaintedButton
-from mochi_pet.ui.palette import (
+from shaqiu_pet.chat import ChatClient, ChatMessage
+from shaqiu_pet.settings import AppSettings, read_style_examples
+from shaqiu_pet.ui.art import bubble_path, shaqiu_pixmap
+from shaqiu_pet.ui.controls import PaintedButton
+from shaqiu_pet.ui.palette import (
     CARD,
     CORAL,
     INK,
@@ -177,7 +177,7 @@ class MessageBubble(QFrame):
 
 
 class TypingBubble(QFrame):
-    """The three-dot 'Mochi is thinking' indicator."""
+    """The three-dot 'shaqiu is thinking' indicator."""
 
     def __init__(self):
         super().__init__()
@@ -228,7 +228,7 @@ class ChatWindow(QMainWindow):
         self._typing_row: QWidget | None = None
         self._typing_bubble: TypingBubble | None = None
         self.setObjectName("chatWindow")
-        self.setWindowTitle("Mochi · 桌宠聊天室")
+        self.setWindowTitle("shaqiu · 桌宠聊天室")
         self.resize(600, 740)
         self.setMinimumSize(480, 580)
 
@@ -281,7 +281,7 @@ class ChatWindow(QMainWindow):
 
         identity = QVBoxLayout()
         identity.setSpacing(2)
-        title = QLabel("Mochi")
+        title = QLabel("shaqiu")
         title.setObjectName("chatTitle")
         self.connection_label = QLabel()
         self.connection_label.setObjectName("chatSubtitle")
@@ -313,13 +313,13 @@ class ChatWindow(QMainWindow):
         return wrapper
 
     def _refresh_avatars(self) -> None:
-        self.header_avatar.setPixmap(mochi_pixmap(47, "happy"))
+        self.header_avatar.setPixmap(shaqiu_pixmap(47, "happy"))
 
     def _message_avatar(self, mood: str) -> QLabel:
         avatar = QLabel()
         avatar.setFixedSize(34, 34)
         avatar.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        avatar.setPixmap(mochi_pixmap(31, mood))
+        avatar.setPixmap(shaqiu_pixmap(31, mood))
         avatar.setStyleSheet(
             "background: #FFF4E6; border: 1.2px solid #F3DEC6; border-radius: 17px;"
         )
@@ -338,7 +338,7 @@ class ChatWindow(QMainWindow):
         editor_layout.setContentsMargins(14, 9, 9, 9)
         editor_layout.setSpacing(8)
         self.input = QPlainTextEdit()
-        self.input.setPlaceholderText("和 Mochi 说点什么……")
+        self.input.setPlaceholderText("和 shaqiu 说点什么……")
         self.input.setFixedHeight(60)
         self.input.setMaximumBlockCount(4)
         self.input.setFrameShape(QFrame.Shape.NoFrame)
@@ -385,7 +385,7 @@ class ChatWindow(QMainWindow):
         self._add_message(user_text, from_user=True)
         self.history.append(ChatMessage(role="user", content=user_text))
         self.send_button.setEnabled(False)
-        self.status.setText("Mochi 正在想怎么回你…")
+        self.status.setText("shaqiu 正在想怎么回你…")
         self._show_typing()
         worker = ChatWorker(
             self.client,
@@ -417,7 +417,7 @@ class ChatWindow(QMainWindow):
         if demo:
             self.connection_label.setText("●  本地演示模式 · 在设置里连接模型")
             self.connection_label.setStyleSheet("color: #A9791F; font-size: 8pt;")
-            self.status.setText("Mochi 现在只会重复你的话，接上模型就能好好聊天啦")
+            self.status.setText("shaqiu 现在只会重复你的话，接上模型就能好好聊天啦")
         else:
             self.connection_label.setText("●  已连接模型 · 密钥由系统凭据库保护")
             self.connection_label.setStyleSheet(f"color: {MINT_DEEP}; font-size: 8pt;")

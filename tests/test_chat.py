@@ -1,7 +1,7 @@
 import httpx
 
-from mochi_pet.chat import ChatClient, ChatMessage
-from mochi_pet.settings import AppSettings
+from shaqiu_pet.chat import ChatClient, ChatMessage
+from shaqiu_pet.settings import AppSettings
 
 
 def test_demo_reply_works_without_an_api():
@@ -24,7 +24,7 @@ def test_chat_request_uses_style_and_history(monkeypatch):
             request=httpx.Request("POST", endpoint),
         )
 
-    monkeypatch.setattr("mochi_pet.chat.httpx.post", fake_post)
+    monkeypatch.setattr("shaqiu_pet.chat.httpx.post", fake_post)
     settings = AppSettings(endpoint="https://api.example.com/chat", model="pet-model")
     history = [ChatMessage(role="user", content="前一句")]
 

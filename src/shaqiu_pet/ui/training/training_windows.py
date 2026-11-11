@@ -26,10 +26,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from mochi_pet.settings import TrainingHistoryStore, TrainingRecord
-from mochi_pet.training import SchulteSession, format_duration
-from mochi_pet.ui.controls import PaintedButton, PaintedPill
-from mochi_pet.ui.palette import INK, MINT_DEEP, qcolor, ui_font
+from shaqiu_pet.settings import TrainingHistoryStore, TrainingRecord
+from shaqiu_pet.training import SchulteSession, format_duration
+from shaqiu_pet.ui.controls import PaintedButton, PaintedPill
+from shaqiu_pet.ui.palette import INK, MINT_DEEP, qcolor, ui_font
 
 VISION_PREFLASH_MS = 80
 VISION_NUMBER_MS = 340
@@ -63,7 +63,7 @@ class SchulteWindow(QWidget):
         self._started_at = 0.0
         self.elapsed_ms = 0
         self.setObjectName("trainingWindow")
-        self.setWindowTitle("Mochi | 舒尔特方格")
+        self.setWindowTitle("shaqiu | 舒尔特方格")
         self.resize(900, 700)
         self.setMinimumSize(760, 620)
 
@@ -339,7 +339,7 @@ class ReactionWindow(QWidget):
         super().__init__()
         self.history_store = history_store
         self.setObjectName("trainingWindow")
-        self.setWindowTitle("Mochi | 反应训练")
+        self.setWindowTitle("shaqiu | 反应训练")
         self.resize(760, 640)
         self.setMinimumSize(660, 570)
 
@@ -480,7 +480,7 @@ class VisionWindow(QWidget):
         self.target = ""
         self.response_started = 0.0
         self.setObjectName("trainingWindow")
-        self.setWindowTitle("Mochi | 动态视力")
+        self.setWindowTitle("shaqiu | 动态视力")
         self.resize(720, 610)
         self.setMinimumSize(620, 540)
 

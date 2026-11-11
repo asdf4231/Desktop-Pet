@@ -1,6 +1,6 @@
-# Mochi 桌面宠物
+# shaqiu 桌面宠物
 
-一个轻量、透明置顶的 Windows 桌面伙伴：固定角色形象、异步 AI 聊天、系统托盘和三款注意力训练。桌宠使用项目内的图片素材，并通过呼吸、摇摆、跳跃和点击反馈动起来；形象本身和配色均不可修改。
+一个轻量、透明置顶的 Windows 桌面伙伴：固定角色形象、异步 AI 聊天、系统托盘和三款注意力训练。原图已拆分为头部、身体、左右手臂、左右腿和尾巴图层，因此能单独点头、挥手、摆臂、抬腿和摇尾巴；形象本身和配色均不可修改。
 
 ## 快速开始
 
@@ -12,17 +12,17 @@ python -m venv .venv
 .\.venv\Scripts\python desktop_pet.py
 ```
 
-也可以安装后运行 `mochi-pet` 或 `python -m mochi_pet`。
+也可以安装后运行 `shaqiu-pet` 或 `python -m shaqiu_pet`。
 
-## 和 Mochi 相处
+## 和 shaqiu 相处
 
-Mochi 是一个大头的二次元角色，陪着你待在桌面上，而不是一个等你点菜单的工具：
+shaqiu 是一个大头的二次元角色，陪着你待在桌面上，而不是一个等你点菜单的工具：
 
 - 它会自己开口。启动几秒后它先打招呼，之后会时不时提醒你喝水、起来走动，或者直接问你「要不要玩一局？」。
   - 想聊天还是想训练注意力，都可以直接在它头顶的气泡下面点答案，不用去翻右键菜单。
-- 点它一下会做出反应；拖动可以换位置；双击直接打开聊天；悬停时脚边会出现快捷按钮。
+  - 点它一下会做出反应；头部、手臂和双腿会按不同动作独立运动。拖动可以换位置；双击直接打开聊天；悬停时脚边会出现快捷按钮。
 - 长时间没人理它会打个盹，你一碰它就醒；允许的话它还会自己在桌面上慢慢走动。
-- 右键菜单、系统托盘仍然保留，作为备用入口。
+- 右键菜单、系统托盘仍然保留，作为备用入口；两处都可以退出 shaqiu。
 
 ## 个性化设置
 
@@ -70,14 +70,14 @@ Mochi 是一个大头的二次元角色，陪着你待在桌面上，而不是�
 ## 项目结构
 
 ```text
-src/mochi_pet/             应用入口、配置、聊天服务和 Qt 界面
-src/mochi_pet/autostart.py Windows 开机自启（只写当前用户的 Run 项）
-src/mochi_pet/assets/      固定角色图片素材
-src/mochi_pet/ui/art.py    角色图片绘制、呼吸与动作动画
-src/mochi_pet/ui/palette.py  统一的配色与渐变工具
-src/mochi_pet/ui/theme.py  全局 QSS 样式表
-src/mochi_pet/ui/training/ 舒尔特、反应和动态视力训练窗口
-src/mochi_pet/training.py  舒尔特 1–50 连续训练状态
+src/shaqiu_pet/             应用入口、配置、聊天服务和 Qt 界面
+src/shaqiu_pet/autostart.py Windows 开机自启（只写当前用户的 Run 项）
+src/shaqiu_pet/assets/      固定角色图片与拆分后的头、身体、四肢、尾巴图层
+src/shaqiu_pet/ui/art.py    各身体图层的关节旋转与动作动画
+src/shaqiu_pet/ui/palette.py  统一的配色与渐变工具
+src/shaqiu_pet/ui/theme.py  全局 QSS 样式表
+src/shaqiu_pet/ui/training/ 舒尔特、反应和动态视力训练窗口
+src/shaqiu_pet/training.py  舒尔特 1–50 连续训练状态
 tests/                     配置、API、桌宠互动和 Qt 渲染测试
 .github/workflows/ci.yml   Windows / Python CI
 pyproject.toml             依赖、打包与质量检查配置

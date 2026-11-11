@@ -4,7 +4,7 @@ Kept as one string so every Qt widget surface (chat, settings, training) shares 
 same warm, rounded, soft-shadowed look as the hand-painted pet artwork.
 """
 
-from mochi_pet.ui.palette import (
+from shaqiu_pet.ui.palette import (
     CARD,
     CORAL,
     CORAL_DEEP,

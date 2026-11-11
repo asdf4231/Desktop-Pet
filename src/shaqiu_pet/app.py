@@ -8,9 +8,9 @@ from platformdirs import user_log_path
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QSystemTrayIcon
 
-from mochi_pet import __version__, autostart
-from mochi_pet.chat import ChatClient
-from mochi_pet.settings import (
+from shaqiu_pet import __version__, autostart
+from shaqiu_pet.chat import ChatClient
+from shaqiu_pet.settings import (
     AppSettings,
     CredentialStore,
     PetState,
@@ -18,12 +18,12 @@ from mochi_pet.settings import (
     SettingsStore,
     TrainingHistoryStore,
 )
-from mochi_pet.ui.art import mochi_icon
-from mochi_pet.ui.chat_window import ChatWindow
-from mochi_pet.ui.pet_widget import PetWidget
-from mochi_pet.ui.settings_dialog import SettingsDialog
-from mochi_pet.ui.theme import APP_STYLESHEET
-from mochi_pet.ui.training import ReactionWindow, SchulteWindow, VisionWindow
+from shaqiu_pet.ui.art import shaqiu_icon
+from shaqiu_pet.ui.chat_window import ChatWindow
+from shaqiu_pet.ui.pet_widget import PetWidget
+from shaqiu_pet.ui.settings_dialog import SettingsDialog
+from shaqiu_pet.ui.theme import APP_STYLESHEET
+from shaqiu_pet.ui.training import ReactionWindow, SchulteWindow, VisionWindow
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,12 +31,12 @@ LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s: %(message)s"
 
 
 def _log_directory_candidates() -> list[Path]:
-    candidates = [Path(user_log_path("MochiPet", appauthor=False))]
+    candidates = [Path(user_log_path("shaqiu", appauthor=False))]
     # tempfile.gettempdir() silently degrades to the current directory when no
     # temp location is usable; never let that drop logs into the project folder.
     fallback = Path(tempfile.gettempdir())
     if fallback.is_absolute() and fallback.resolve() != Path.cwd().resolve():
-        candidates.append(fallback / "MochiPet")
+        candidates.append(fallback / "shaqiu")
     return candidates
 
 
@@ -50,7 +50,7 @@ def _log_file_handler() -> logging.Handler | None:
         try:
             directory.mkdir(parents=True, exist_ok=True)
             return RotatingFileHandler(
-                directory / "mochi-pet.log",
+                directory / "shaqiu-pet.log",
                 maxBytes=1_000_000,
                 backupCount=3,
                 encoding="utf-8",
@@ -85,6 +85,7 @@ class DesktopPetApplication:
         self.pet.open_reaction.connect(self.open_reaction)
         self.pet.open_vision.connect(self.open_vision)
         self.pet.open_settings.connect(self.open_settings)
+        self.pet.quit_requested.connect(self.application.quit)
         self.pet.position_changed.connect(self._remember_position)
         self._create_tray_icon()
         if self.settings.remember_position:
@@ -94,7 +95,7 @@ class DesktopPetApplication:
 
     def _create_tray_icon(self) -> None:
         self.tray = QSystemTrayIcon(self._make_icon(), self.application)
-        self.tray.setToolTip("Mochi · 你的桌面小宠物")
+        self.tray.setToolTip("shaqiu · 你的桌面小宠物")
         menu = QMenu()
         menu.addAction("陪我聊聊", self.open_chat)
         menu.addAction("舒尔特方格", self.open_schulte)
@@ -106,14 +107,14 @@ class DesktopPetApplication:
         self.click_through_action.setChecked(self.settings.click_through)
         self.click_through_action.toggled.connect(self._set_click_through)
         menu.addAction("设置…", self.open_settings)
-        menu.addAction("退出 Mochi（下次见）", self.application.quit)
+        menu.addAction("退出 shaqiu（下次见）", self.application.quit)
         self.tray.setContextMenu(menu)
         if QSystemTrayIcon.isSystemTrayAvailable():
             self.tray.show()
 
     @staticmethod
     def _make_icon() -> QIcon:
-        return QIcon(mochi_icon(64))
+        return QIcon(shaqiu_icon(64))
 
     def _show_window(self, name: str, factory):
         window = self.windows.get(name)
@@ -129,7 +130,7 @@ class DesktopPetApplication:
         window.activateWindow()
 
     def _on_chat_closed(self) -> None:
-        """Mochi notices when the conversation ends, instead of going silent."""
+        """shaqiu notices when the conversation ends, instead of going silent."""
         self._pet_says("wave", "聊完了？我还在。")
 
     def _pet_says(self, action: str, message: str) -> None:
@@ -211,9 +212,9 @@ def main() -> int:
     global _application_controller
     configure_logging()
     application = QApplication.instance() or QApplication(sys.argv)
-    application.setApplicationName("MochiPet")
+    application.setApplicationName("shaqiu")
     application.setApplicationVersion(__version__)
-    application.setWindowIcon(QIcon(mochi_icon(128)))
+    application.setWindowIcon(QIcon(shaqiu_icon(128)))
     application.setQuitOnLastWindowClosed(False)
     application.setStyle("Fusion")
     application.setStyleSheet(APP_STYLESHEET)
@@ -223,7 +224,9 @@ def main() -> int:
         _application_controller = DesktopPetApplication(application)
     except Exception:
         logging.getLogger(__name__).exception("Application startup failed")
-        QMessageBox.critical(None, "Mochi 无法启动", "启动过程中发生错误。详细信息已写入应用日志。")
+        QMessageBox.critical(
+            None, "shaqiu 无法启动", "启动过程中发生错误。详细信息已写入应用日志。"
+        )
         return 1
     return application.exec()
 

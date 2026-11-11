@@ -6,8 +6,8 @@ from PySide6.QtCore import QPointF, QRectF, QSize, Qt, QVariantAnimation
 from PySide6.QtGui import QColor, QFont, QFontMetrics, QLinearGradient, QPainter, QPen
 from PySide6.QtWidgets import QAbstractButton, QSizePolicy, QWidget
 
-from mochi_pet.ui.art import paint_sparkle
-from mochi_pet.ui.palette import (
+from shaqiu_pet.ui.art import paint_sparkle
+from shaqiu_pet.ui.palette import (
     CORAL,
     CORAL_DEEP,
     CREAM_DEEP,

@@ -1,0 +1,25 @@
+{
+  "records": [
+    {
+      "kind": "reaction",
+      "duration_ms": 318,
+      "success": true,
+      "played_at": "2026-11-11T19:12:00+08:00",
+      "note": ""
+    },
+    {
+      "kind": "reaction",
+      "duration_ms": 274,
+      "success": true,
+      "played_at": "2026-11-11T19:12:00+08:00",
+      "note": ""
+    },
+    {
+      "kind": "schulte",
+      "duration_ms": 18500,
+      "success": true,
+      "played_at": "2026-11-11T19:12:00+08:00",
+      "note": ""
+    }
+  ]
+}

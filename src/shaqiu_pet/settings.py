@@ -59,7 +59,7 @@ class PetState(BaseModel):
 
 class SettingsStore:
     def __init__(self, path: Path | None = None):
-        config_dir = Path(user_config_path("MochiPet", appauthor=False))
+        config_dir = Path(user_config_path("shaqiu", appauthor=False))
         self.path = path or config_dir / "settings.json"
 
     def load(self) -> AppSettings:
@@ -97,7 +97,7 @@ class PetStateStore:
     """Remembers where the pet was left, so it comes back to the same spot."""
 
     def __init__(self, path: Path | None = None):
-        config_dir = Path(user_config_path("MochiPet", appauthor=False))
+        config_dir = Path(user_config_path("shaqiu", appauthor=False))
         self.path = path or config_dir / "pet_state.json"
 
     def load(self) -> PetState:
@@ -122,7 +122,7 @@ class PetStateStore:
 
 
 class CredentialStore:
-    SERVICE_NAME = "MochiPet"
+    SERVICE_NAME = "shaqiu"
     ACCOUNT_NAME = "chat-api"
 
     def get_api_key(self) -> str:
@@ -169,7 +169,7 @@ class TrainingHistoryStore:
     """Small JSON history store for the three attention-training windows."""
 
     def __init__(self, path: Path | None = None):
-        config_dir = Path(user_config_path("MochiPet", appauthor=False))
+        config_dir = Path(user_config_path("shaqiu", appauthor=False))
         self.path = path or config_dir / "training_history.json"
 
     def load(self) -> TrainingHistory:
