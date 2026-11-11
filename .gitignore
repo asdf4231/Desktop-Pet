@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+*.spec
+*.log
+.env
+
+# local art/UI preview renders (see .preview/)
+.preview/
+*_preview.png

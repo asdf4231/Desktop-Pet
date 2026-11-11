@@ -1,0 +1,7 @@
+{
+  "endpoint": "",
+  "model": "",
+  "api_key": "",
+  "system_prompt": "你是一个住在桌面上的小宠物。请用自然、简短、亲切的中文回复。",
+  "request_timeout": 30
+}
